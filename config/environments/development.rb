@@ -85,4 +85,6 @@ Rails.application.configure do
 
   # Allow POST authenticity on Codespaces in dev
   config.action_controller.forgery_protection_origin_check = false
+  #Email_Reset_Host_Link
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 end

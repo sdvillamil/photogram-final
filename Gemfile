@@ -110,3 +110,9 @@ group :test do
   gem "rspec-html-matchers"
   gem "webmock"
 end
+
+gem 'devise'
+gem 'image_processing'
+gem "carrierwave"
+gem "cloudinary"
+
