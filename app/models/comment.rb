@@ -3,9 +3,10 @@
 # Table name: comments
 #
 #  id         :bigint           not null, primary key
-#  content    :text
+#  body       :text
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  author_id  :bigint
 #  photo_id   :bigint
 #  user_id    :bigint
 #
@@ -16,10 +17,11 @@
 #
 # Foreign Keys
 #
+#  fk_rails_...  (author_id => users.id)
 #  fk_rails_...  (photo_id => photos.id)
 #  fk_rails_...  (user_id => users.id)
 #
 class Comment < ApplicationRecord
-  belongs_to(:commenter, class_name: "User", foreign_key: "author_id", counter_cache: :comments_count)
+  belongs_to(:author, class_name: "User", foreign_key: "author_id", counter_cache: :comments_count)
   belongs_to(:photo, class_name: "Photo", foreign_key: "photo_id", counter_cache: :comments_count)
 end

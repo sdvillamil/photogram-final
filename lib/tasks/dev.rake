@@ -6,11 +6,12 @@ task({ :sample_data => :environment}) do
     ActiveRecord::Base.connection.reset_pk_sequence!(t)
   end
 
-  User.delete_all
-  Photo.delete_all
-  Like.delete_all
-  Comment.delete_all
-  FollowRequest.delete_all
+  
+  Like.destroy_all
+  Comment.destroy_all
+  FollowRequest.destroy_all
+  Photo.destroy_all
+  User.destroy_all
 
   users = [
     {id: 81, username: "galen", email: "galen@example.com", private: false, likes_count: 97, comments_count: 98, created_at: "2015-01-19 09:24:34", updated_at: "2019-10-08 10:25:00"},
