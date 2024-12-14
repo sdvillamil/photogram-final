@@ -4,7 +4,7 @@ class PhotosController < ApplicationController
 
     @list_of_photos = matching_photos.order({ :created_at => :desc })
 
-    render({ :template => "photos/index" })
+    render({ :template => "photos/index.html.erb" })
   end
 
   def show
@@ -14,13 +14,19 @@ class PhotosController < ApplicationController
 
     @the_photo = matching_photos.at(0)
 
-    render({ :template => "photos/show" })
+    render({ :template => "photos/show.html.erb" })
+
+    #need: comments?
   end
 
   def create
     the_photo = Photo.new
+    the_photo.owner_id = params.fetch("query_owner_id")
+
     the_photo.caption = params.fetch("query_caption")
     the_photo.image = params.fetch("query_image")
+    
+
 
     if the_photo.valid?
       the_photo.save
@@ -33,7 +39,8 @@ class PhotosController < ApplicationController
   def update
     the_id = params.fetch("path_id")
     the_photo = Photo.where({ :id => the_id }).at(0)
-
+    #need to link with counter cache
+    the_photo.owner_id = params.fetch("query_owner_id")
     the_photo.caption = params.fetch("query_caption")
     the_photo.image = params.fetch("query_image")
 
