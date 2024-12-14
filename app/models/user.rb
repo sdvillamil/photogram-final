@@ -3,11 +3,15 @@
 # Table name: users
 #
 #  id                     :bigint           not null, primary key
+#  comments_count         :integer          default(0)
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
+#  likes_count            :integer          default(0)
+#  private                :boolean
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
+#  username               :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
@@ -25,7 +29,7 @@ class User < ApplicationRecord
   has_many(:own_photos, class_name: "Photo", foreign_key: "owner_id", dependent: :destroy)
   has_many(:comments, class_name: "Comment", foreign_key: "author_id", dependent: :destroy)
   has_many(:likes, class_name: "Like", foreign_key: "fan_id", dependent: :destroy)
-  has_many()
+  
 
 
   

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_14_005310) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_14_024503) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,11 +26,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_14_005310) do
 
   create_table "follow_requests", force: :cascade do |t|
     t.bigint "sender_id"
-    t.bigint "receiver_id"
+    t.bigint "recipient_id"
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["receiver_id"], name: "index_follow_requests_on_receiver_id"
+    t.index ["recipient_id"], name: "index_follow_requests_on_recipient_id"
     t.index ["sender_id"], name: "index_follow_requests_on_sender_id"
   end
 
@@ -49,6 +49,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_14_005310) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "owner_id"
+    t.integer "likes_count", default: 0
+    t.integer "comments_count", default: 0
   end
 
   create_table "users", force: :cascade do |t|
@@ -59,13 +61,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_14_005310) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "username"
+    t.boolean "private"
+    t.integer "likes_count", default: 0
+    t.integer "comments_count", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "comments", "photos"
   add_foreign_key "comments", "users"
-  add_foreign_key "follow_requests", "users", column: "receiver_id"
+  add_foreign_key "follow_requests", "users", column: "recipient_id"
   add_foreign_key "follow_requests", "users", column: "sender_id"
   add_foreign_key "likes", "photos"
   add_foreign_key "likes", "users"

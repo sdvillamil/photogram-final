@@ -2,12 +2,14 @@
 #
 # Table name: photos
 #
-#  id         :bigint           not null, primary key
-#  caption    :text
-#  image      :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  owner_id   :integer
+#  id             :bigint           not null, primary key
+#  caption        :text
+#  comments_count :integer          default(0)
+#  image          :string
+#  likes_count    :integer          default(0)
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  owner_id       :integer
 #
 class Photo < ApplicationRecord
   

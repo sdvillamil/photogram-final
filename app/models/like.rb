@@ -19,6 +19,6 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Like < ApplicationRecord
-  belongs_to(:liker, class_name: "User", foreign_key: "liker_id")
-  belongs_to(:photo, class_name: "Photo", foreign_key: "photo_id")
+  belongs_to(:liker, class_name: "User", foreign_key: "liker_id", counter_cache: :likes_count)
+  belongs_to(:photo, class_name: "Photo", foreign_key: "photo_id", counter_cache: :likes_count)
 end

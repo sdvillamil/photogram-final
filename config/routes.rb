@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  # Routes for the User:
+  
+  # READ
+  get("/users", { :controller => "users", :action => "index"})
+
+  get("/users/:path_id", { :controller => "users", :action => "show"})
+  
+ #------------------------------
+
   # Routes for the Photo resource:
 
   # CREATE
@@ -75,6 +84,9 @@ Rails.application.routes.draw do
   get("/delete_follow_request/:path_id", { :controller => "follow_requests", :action => "destroy" })
 
   #------------------------------
+
+
+
 
   devise_for :users
 
