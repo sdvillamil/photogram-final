@@ -1,0 +1,20 @@
+<div>
+  <div>
+    <h1>List of users</h1>
+  </div>
+</div>
+
+<div>
+  <table border="1">
+    <tr>
+      <th>Username</th>
+      <th>Private</th>
+      <% if user_signed_in? %>
+        <th>Follow Status</th>
+      <% end %>
+      <th>Details</th>
+    </tr>
+
+    <% @list_of_users.each do |one_user|%>
+      <tr>
+        <td>

@@ -4,7 +4,7 @@ class CommentsController < ApplicationController
 
     @list_of_comments = matching_comments.order({ :created_at => :desc })
 
-    render({ :template => "comments/index.html.erb" })
+    render({ :template => "comments/index" })
   end
 
   def show
@@ -14,7 +14,7 @@ class CommentsController < ApplicationController
 
     @the_comment = matching_comments.at(0)
 
-    render({ :template => "comments/show.html.erb" })
+    render({ :template => "comments/show" })
   end
 
   def create

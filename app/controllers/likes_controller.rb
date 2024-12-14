@@ -3,7 +3,7 @@ class LikesController < ApplicationController
     matching_likes = Photo.all
 
     @list_of_likes = matching_likes.order({ :created_at => :desc })
-    render({ :template => "likes/index.html.erb" })
+    render({ :template => "likes/index" })
   end
 
   def show
@@ -12,7 +12,7 @@ class LikesController < ApplicationController
 
     @the_like = matching_likes.at(0)
 
-    render({ :template => "likes/show.html.erb" })
+    render({ :template => "likes/show" })
   end
 
   def create

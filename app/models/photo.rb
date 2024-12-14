@@ -19,4 +19,6 @@ class Photo < ApplicationRecord
   has_many(:likes, class_name: "Like", foreign_key: "photo_id")
 
   mount_uploader :image, ImageUploader
+  validates :image, presence: true
+
 end

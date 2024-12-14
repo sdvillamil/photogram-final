@@ -4,7 +4,7 @@ class FollowRequestsController < ApplicationController
 
     @list_of_follow_requests = matching_follow_requests.order({ :created_at => :desc })
 
-    render({ :template => "follow_requests/index.html.erb" })
+    render({ :template => "follow_requests/index" })
   end
 
   def show
@@ -14,7 +14,7 @@ class FollowRequestsController < ApplicationController
 
     @the_follow_request = matching_follow_requests.at(0)
 
-    render({ :template => "follow_requests/show.html.erb" })
+    render({ :template => "follow_requests/show" })
   end
 
   def create
@@ -63,4 +63,3 @@ class FollowRequestsController < ApplicationController
     redirect_to("/follow_requests", { :notice => "Follow Request deleted successfully."} )
   end
 end
-
