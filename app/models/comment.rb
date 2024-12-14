@@ -20,6 +20,6 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Comment < ApplicationRecord
-  belongs_to :user
-  belongs_to :photo
+  belongs_to(:commenter, class_name: "User", foreign_key: "author_id")
+  belongs_to(:photo, class_name: "Photo", foreign_key: "photo_id")
 end
