@@ -1,65 +1,27 @@
 class CommentsController < ApplicationController
-  def index
-    matching_comments = Comment.all
-
-    @list_of_comments = matching_comments.order({ :created_at => :desc })
-
-    render({ :template => "comments/index" })
-  end
-
-  def show
-    the_id = params.fetch("path_id")
-
-    matching_comments = Comment.where({ :id => the_id })
-
-    @the_comment = matching_comments.at(0)
-
-    render({ :template => "comments/show" })
-  end
+  before_action :authenticate_user!
 
   def create
-    the_comment = Comment.new
+    @photo = Photo.find(params[:photo_id])
 
-    the_comment.caption = params.fetch("query_author_id")
+    comment = @photo.comments.new(comment_params)
 
-    the_comment.image = params.fetch("query_body")
+    comment.author_id = current_user.id
 
-    the_comment.photo_id = params.fetch("query_photo_id")
-
-    if the_comment.valid?
-      the_comment.save
-      redirect_to("/comments", { :notice => "Comment created successfully." })
-    else
-      redirect_to("/comments", { :alert => the_comment.errors.full_messages.to_sentence })
-    end
-  end
-
-  def update
-    the_id = params.fetch("path_id")
-
-    the_comment = Comment.where({ :id => the_id }).at(0)
-
-    the_comment.caption = params.fetch("query_author_id")
-
-    the_comment.image = params.fetch("query_body")
-
-    the_comment.photo_id = params.fetch("query_photo_id")
-
-    if the_comment.valid?
-      the_comment.save
-      redirect_to("/photos/#{the_comment.id}", { :notice => "Comment updated successfully."} )
-    else
-      redirect_to("/photos/#{the_comment.id}", { :alert => the_photo.errors.full_messages.to_sentence })
-    end
-  end
-
-  def destroy
-    the_id = params.fetch("path_id")
-
-    the_comment = Comment.where({ :id => the_id }).at(0)
-
-    the_comment.destroy
+    if comment.save
+      @photo.increment!(:comments_count)
+      redirect_to photo_path(@photo), notice: "Comment added successfully"
     
-    redirect_to("/comments", { :notice => "Comment deleted successfully."} )
+    else
+      redirect_to photo_path(@photo), alert: "Unable to add comment: #{comment.errors.full_messages.to_sentence}."
+    end
+  
   end
+
+  private
+
+  def comment_params
+    params.require(:comment).permit(:body, :photo_id)
+  end
+
 end

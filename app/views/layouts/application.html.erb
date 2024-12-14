@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Photogram Final</title>
-</head>
+  <head>
+    <title>Photogram Final</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+
 
 <body>
 
   <nav>
     <ul>
+
       <li><a href="/users">All users</a></li>
       <li><a href="/photos">All public photos</a></li>
 
-      <% if current_user.present? %>
-        <li><a href="/edit_user_profile"> <%= @current_user.user_name %> </a></li>
-        <li><a href="/users/sign_out">Sign out</a></li>
-      <% else %>
-        <li> <a href= "/users/sign_in">Sign in </li>
-        <li> <a href= "/users/sign_up">Sign up </li>
-      <%end%>
+      <% if user_signed_in? %>
+            <li><%= link_to current_user.username, edit_user_registration_path %></li>
+            <%= link_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-danger" %>
+          <% else %>
+            <li><%= link_to "Sign In", new_user_session_path %></li>
+            <li><%= link_to "Sign Up", new_user_registration_path %></li>
+          <% end %>
+
     </ul>
 
-    <% if flash[:notice] %>
-      <p><%= flash[:notice] %></p>
-    <%end%>%
-    <% if flash[:alert] %>
-      <p><%= flash[:alert] %></p>
-    <%end%>%
-  </nav>
+      </nav>
+      
+    </header>
+      <% flash.each do |key, message| %>
+        <div class="alert alert-<%= key %>" data-turbo-permanent><%= message %></div>
+      <% end %>
 
-  <%=yield%>
-</body>
+    <%= yield %>
+  </body>
 </html>

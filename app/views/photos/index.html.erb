@@ -6,56 +6,41 @@
   </div>
 </div>
 
-<hr>
-<% if @current_user == nil%>
-<%else%>
-
-<div>
+<% if user_signed_in? %>
   <div>
-    <h2>      
-      Add Photo 
-    </h2>
-   
-    <form action="/insert_photo" method="post">
-            
-        <label for="image_box">
-          Image
-        </label>
+    <%= form_with(model: Photo.new, url: photos_path, local: true, html: { enctype: "multipart/form-data" }) do |form| %>
 
-        <input type="file" id="image_box" name="query_image">
-        <input type = "hidden" value="<%= @current_user.id %>" name= "query_owner_id">
-                
-        <label for="caption_box">
-          Caption
-        </label>
+        <div>
+          <%= form.label :pic, "Image" %>
+          <%= form.file_field :pic, required: true %>
+        </div>
 
-        <textarea id="caption_box" name="query_caption" rows="3"></textarea>
-                
-      <button>
-        Add photo
-      </button>
-    </form>
+        <div>
+          <%= form.label :cap, "Caption" %>
+          <%= form.text_field :cap, required: true, placeholder: "Enter Caption" %>
+        </div>
+        <div>
+          <button type="submit">Add photo</button>
+        </div>
+
+      </div>
+    <% end %>
   </div>
-</div>
 <% end %>
 
-<hr>
 <div>
   <div>
-    <table border="1">
+    <table border="2">
       <tr>
         <th>
           Image
         </th>
-
         <th>
           Caption
         </th>
-
         <th>
           Owner
         </th>
-
         <th>
           Posted
         </th>
@@ -63,39 +48,39 @@
         <th>
           Likes
         </th>
-
-        <th>    
+        <th>
         </th>
       </tr>
 
-      <% @list_of_photos.each do |a_photo| %>
+      <% @public_photos.each do |photo| %>
       <tr>
         <td>
-          <%= a_photo.id %>
+          <%= image_tag(photo.image.url, alt: "Photo", width: 370) if photo.image.present? %>
+        </td>
+        <td>
+          <%= photo.caption %>
+        </td>
+        <td>
+          <%= photo.owner.username %>
         </td>
 
         <td>
-          <%= a_photo.caption %>
-        </td>
-
+          <%= time_ago_in_words(photo.created_at) %> ago
+        </td>        
         <td>
-          <%= a_photo.image %>
-        </td>
-
-        <td>
-          <%= time_ago_in_words(a_photo.created_at) %> ago
+          <%= photo.likes_count %>
         </td>
         <td>
-          <%= time_ago_in_words(a_photo.updated_at) %> ago
-        </td>
-
-        <td>
-          <a href="/photos/<%= a_photo.id %>">
-            Show details
-          </a>
+          <% if user_signed_in? %>
+            <%= link_to "Show details", photo_path(photo.id) %>
+          <% else %>
+            <%= link_to "Show details", new_user_session_path, class: "btn btn-primary" %>
+           <% end %>
         </td>
       </tr>
       <% end %>
     </table>
   </div>
 </div>
+
+<hr>

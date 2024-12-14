@@ -1,58 +1,46 @@
 class LikesController < ApplicationController
+  before_action :authenticate_user!
   def index
-    matching_likes = Photo.all
-
-    @list_of_likes = matching_likes.order({ :created_at => :desc })
+    @liked_photos = current_user.likes.includes(:photo).map(&:photo)
     render({ :template => "likes/index" })
   end
 
-  def show
-    the_id = params.fetch("path_id")
-    matching_likes = Like.where({ :id => the_id })
-
-    @the_like = matching_likes.at(0)
-
-    render({ :template => "likes/show" })
-  end
-
   def create
-    the_like = Like.new
-    the_like.fan_id = params.fetch("query_fan_id")
+    photo = Photo.find(params[:photo_id])
+    like = current_user.likes.new(photo: photo)
 
-    the_like.photo_id = params.fetch("query_photo_id")
-    
-    if the_like.valid?
-      the_like.save
-
-      redirect_to("/likes", { :notice => "Like created successfully." })
+    if like.save
+      photo.increment!(:likes_count)
+      redirect_to photo_path(photo), notice: "Like created successfully."
     else
-      redirect_to("/likes", { :alert => the_like.errors.full_messages.to_sentence })
+      redirect_to photo_path(photo), alert: like.errors.full_messages.to_sentence
     end
   end
 
-  def update
-    the_id = params.fetch("path_id")
-    the_like = Like.where({ :id => the_id }).at(0)
-
-    the_like.fan_id = params.fetch("query_fan_id")
-
-    the_like.photo_id = params.fetch("query_photo_id")
-
-    if the_like.valid?
-      the_like.save
-      redirect_to("/likes/#{the_like.id}", { :notice => "Like updated successfully."} )
-    else
-      redirect_to("/likes/#{the_like.id}", { :alert => the_like.errors.full_messages.to_sentence })
-    end
-  end
 
   def destroy
-    the_id = params.fetch("path_id")
-    
-    the_like = Like.where({ :id => the_id }).at(0)
+    like = current_user.likes.find(params[:id])
+    photo = like.photo
 
-    the_like.destroy
+    if like.destroy
+      photo.decrement!(:likes_count)
+      redirect_to photo_path(photo), notice: "Like deleted successfully."
+    else
+      redirect_to photo_path(photo), alert: "Unable to unlike the photo"
+    end
+  end
+  def liked_photos
+    @the_user = User.find_by(username: params[:username])
+    if @the_user.nil?
+      redirect_to root_path, alert: "User not found."
+      return
+    end
 
-    redirect_to("/likes", { :notice => "Like deleted successfully."} )
+    @liked_photos = @the_user.likes.includes(:photo).map(&:photo)
+    @followers_count = @the_user.followers.count
+    @following_count = @the_user.following.count
+    @pending_follow_requests = @the_user.received_follow_requests.pending if current_user == @the_user
+
+    render({ :template => "likes/liked_photos" })
   end
 end

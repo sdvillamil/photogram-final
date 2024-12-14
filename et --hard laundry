@@ -1,0 +1,55 @@
+[33m31ed11c[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Model + Route Rework
+[33m9f1991e[m laundry
+[33mef0021f[m controllers
+[33m75c35a7[m 1/2 controller, break
+[33m0571c89[m pre-controller push
+[33md452e85[m fix
+[33m91585c3[m models
+[33md3befc4[m Routes Done. Reset to M_V_C approach
+[33m51fbadb[m User Aut. moving on to pics
+[33m5fec376[m Update spec/ folder to latest version
+[33mf24eb0e[m Start
+[33m9a675f1[m update with project-syncing action
+[33m9bc31f9[m Delete public/erd.png
+[33md7b9465[m update with project-syncing action
+[33m6246a32[m update with project-syncing action
+[33m22ef4a4[m update erd
+[33mc20c806[m update with project-syncing action
+[33m4e76fda[m update with project-syncing action
+[33m164ef93[m update with project-syncing action
+[33m3d7ead7[m update with project-syncing action
+[33mba4dc44[m update with project-syncing action
+[33m507b82a[m update with project-syncing action
+[33m5129ae6[m update with project-syncing action
+[33meedabd4[m update with project-syncing action
+[33m44e87d3[m update with project-syncing action
+[33m3bb0def[m update with project-syncing action
+[33m46ce81b[m update with project-syncing action
+[33mc945c90[m update with project-syncing action
+[33mff577d1[m update with project-syncing action
+[33m687ddc2[m update with project-syncing action
+[33ma21f9e4[m update with project-syncing action
+[33m060e8fb[m update with project-syncing action
+[33ma457b8f[m update with project-syncing action
+[33m577454a[m update with project-syncing action
+[33m9128a74[m update with project-syncing action
+[33mea6ee11[m update with project-syncing action
+[33m78e1b2d[m update with project-syncing action
+[33mb5dffb5[m update with project-syncing action
+[33m6eb8c50[m reset pk on sample data
+[33m6d58724[m update with project-syncing action
+[33m22464d2[m update with project-syncing action
+[33m5f9e766[m update with project-syncing action
+[33m79e2996[m update with project-syncing action
+[33m5c9ced2[m update with project-syncing action
+[33m43dbef0[m update with project-syncing action
+[33mfb0a277[m update with project-syncing action
+[33mb1976a8[m bump grade_runner version
+[33m4958a08[m Add alice, bob, carol, doug, and ellen
+[33mc262dd8[m update vscode settings
+[33m4a42c3d[m update vscode settings
+[33m5e91b7a[m update docker image
+[33m5c64bdb[m replace deprecated web_console config
+[33mf4dfda5[m add bin/server script
+[33m76609e3[m bundle update for grade_runner
+[33m9de711a[m initial commit

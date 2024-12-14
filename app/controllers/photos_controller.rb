@@ -1,63 +1,90 @@
 class PhotosController < ApplicationController
+  before_action :authenticate_user!, only: [:show, :create, :update, :destroy, :feed, :discover]
+
   def index
-    matching_photos = Photo.all
-
-    @list_of_photos = matching_photos.order({ :created_at => :desc })
-
+    @public_photos = Photo.joins(:poster).where(users: { private: false }).order(created_at: :desc)
     render({ :template => "photos/index" })
   end
 
   def show
-    the_id = params.fetch("path_id")
+    @the_photo = Photo.find_by(id: params[:id])
 
-    matching_photos = Photo.where({ :id => the_id })
+    if @the_photo.nil?
+      redirect_to photos_path, alert: "Photo not found."
+      return
+    end
 
-    @the_photo = matching_photos.at(0)
+    @is_owner = user_signed_in? && @the_photo.owner == current_user
 
     render({ :template => "photos/show" })
-
-    #need: comments?
   end
-
   def create
-    the_photo = Photo.new
-    the_photo.owner_id = params.fetch("query_owner_id")
+    the_photo = Photo.new(photo_params)
+    the_photo.owner_id = current_user.id
 
-    the_photo.caption = params.fetch("query_caption")
-    the_photo.image = params.fetch("query_image")
-    
-
-
-    if the_photo.valid?
-      the_photo.save
-      redirect_to("/photos", { :notice => "Photo created successfully." })
+    if the_photo.save
+      redirect_to photos_path, notice: "Photo created successfully."
     else
-      redirect_to("/photos", { :alert => the_photo.errors.full_messages.to_sentence })
+      Rails.logger.debug("Photo Save Errors: #{the_photo.errors.full_messages}")
+      redirect_to photos_path, alert: the_photo.errors.full_messages.to_sentence
     end
   end
 
   def update
-    the_id = params.fetch("path_id")
-    the_photo = Photo.where({ :id => the_id }).at(0)
-    #need to link with counter cache
-    the_photo.owner_id = params.fetch("query_owner_id")
-    the_photo.caption = params.fetch("query_caption")
-    the_photo.image = params.fetch("query_image")
+    the_photo = Photo.find_by(id: params[:id])
 
-    if the_photo.valid?
-      the_photo.save
-      redirect_to("/photos/#{the_photo.id}", { :notice => "Photo updated successfully."} )
+    if the_photo.nil?
+      redirect_to photos_path, alert: "Photo not found."
+      return
+    end
+
+    if the_photo.update(photo_params)
+      redirect_to photo_path(the_photo), notice: "Photo updated successfully"
     else
-      redirect_to("/photos/#{the_photo.id}", { :alert => the_photo.errors.full_messages.to_sentence })
+      redirect_to photo_path(the_photo), alert: the_photo.errors.full_messages.to_sentence
     end
   end
-
   def destroy
-    the_id = params.fetch("path_id")
-    the_photo = Photo.where({ :id => the_id }).at(0)
+    the_photo = Photo.find_by(id: params[:id])
+
+    if the_photo.nil?
+      redirect_to photos_path, alert: "Photo not found."
+      return
+    end
 
     the_photo.destroy
+    redirect_to photos_path, notice: "Photo deleted successfully."
+  end
 
-    redirect_to("/photos", { :notice => "Photo deleted successfully."} )
+
+  def feed
+    @user = User.find_by(username: params[:username])
+
+    if @user.nil?
+      redirect_to root_path, alert: "User not found."
+    else
+      following_ids = @user.following.pluck(:id)
+      @feed_photos = Photo.where(owner_id: following_ids).order(created_at: :desc)
+    end
+
+    render template: "photos/feed"
+  end
+
+  def discover
+    following_ids = current_user.following.pluck(:id)
+
+    @discover_photos = if following_ids.any?
+                         Photo.joins(:likes).where(likes: { fan_id: following_ids }).distinct
+                       else
+                         Photo.none
+                       end
+
+    render template: "photos/discover"
+  end
+
+  private
+
+  def photo_params
+    params.require(:photo).permit(:caption, :image)
   end
 end

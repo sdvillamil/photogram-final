@@ -1,29 +1,53 @@
 class UsersController < ApplicationController
-  def index
-    matching_users = User.all
+  before_action :authenticate_user!, except: [:index]
 
-    @list_of_users = matching_users.order({ :username => :asc })
-    
+  def index
+    @list_of_users = User.order(created_at: :desc)
     render({ :template => "users/index" })
   end
-
   def show
-    user_name = params.fetch("path_id")
-
-    @the_user = User.where({ :username => user_name}).at(0)
+    @the_user = User.find_by(username: params[:username])
 
     if @the_user.nil?
-      redirect_to("/users", alert: "User not found.") and return
+      redirect_to root_path, alert: "User not found."
+    else
+
+      @followers_count = @the_user.received_follow_requests.where(status: "accepted").count
+      @following_count = @the_user.sent_follow_requests.where(status: "accepted").count
+      @pending_follow_requests = @the_user.received_follow_requests.where(status: "pending")
     end
+  end
+  def create
+    the_user = User.new(user_params)
 
-    user_photos = @the_user.own_photos
-
-    @list_of_photos = user_photos.order({ :created_at => :desc})
-
-    render({ :template => "users/show" })
+    if the_user.save
+      redirect_to users_path, notice: "User created successfully."
+    else
+      redirect_to users_path, alert: the_user.errors.full_messages.to_sentence
+    end
   end
 
-  def edit_profile
-    render({ :template => "users/edit_profile" })
+  def update
+    @the_user = User.find(params[:id])
+
+    if @the_user.update(user_params)
+      redirect_to user_profile_path(@the_user.username), notice: "User updated successfully."
+    else
+      redirect_to user_profile_path(@the_user.username), alert: @the_user.errors.full_messages.to_sentence
+    end
+  end
+
+  def destroy
+    @the_user = User.find(params[:id])
+
+    @the_user.destroy
+    redirect_to users_path, notice: "User deleted successfully"
+  end
+
+  
+  private
+
+  def user_params
+    params.require(:user).permit(:username, :private, :email, :password, :password_confirmation)
   end
 end

@@ -1,65 +1,72 @@
 class FollowRequestsController < ApplicationController
+  before_action :authenticate_user!
   def index
-    matching_follow_requests = FollowRequest.all
-
-    @list_of_follow_requests = matching_follow_requests.order({ :created_at => :desc })
-
+    @list_of_follow_requests = FollowRequest.order(created_at: :desc)
     render({ :template => "follow_requests/index" })
   end
 
+
   def show
-    the_id = params.fetch("path_id")
+    the_id = params[:id]
+    @the_follow_request = FollowRequest.find_by(id: the_id)
 
-    matching_follow_requests = Photo.where({ :id => the_id })
+    if @the_follow_request.nil?
+      redirect_to root_path, alert: "Follow request not found"
 
-    @the_follow_request = matching_follow_requests.at(0)
-
-    render({ :template => "follow_requests/show" })
+    else
+      render({ :template => "follow_requests/show" })
+    end
   end
 
+
   def create
-    the_follow_request = FollowRequest.new
+    recipient = User.find(params[:query_recipient_id])
+    follow_request = current_user.sent_follow_requests.build(recipient: recipient)
 
-    the_follow_request.recipient_id = params.fetch("query_recipient_id")
+    if follow_request.save
+      if !recipient.private
+        follow_request.update(status: "accepted")
+      end
 
-    the_follow_request.sender_id = params.fetch("query_sender_id")
-
-    the_follow_request.status = params.fetch("query_status")
-
-
-    if the_follow_request.valid?
-      the_follow_request.save
-      
-      redirect_to("/follow_request", { :notice => "Follow Request created successfully." })
+      redirect_to user_profile_path(recipient.username), notice: "Follow request sent successfully."
     else
-      redirect_to("/follow_request", { :alert => the_follow_request.errors.full_messages.to_sentence })
+      redirect_to user_profile_path(recipient.username), alert: follow_request.errors.full_messages.to_sentence
     end
   end
 
   def update
-    the_id = params.fetch("path_id")
-    the_follow_request = FollowRequest.where({ :id => the_id }).at(0)
-
-    the_follow_request.recipient_id = params.fetch("query_recipient_id")
-
-    the_follow_request.sender_id = params.fetch("query_sender_id")
-
-    the_follow_request.status = params.fetch("query_status")
-
-    if  the_follow_request.valid?
-      the_follow_request.save
-      redirect_to("/follow_requests/#{ the_follow_request.id}", { :notice => "Follow Request updated successfully."} )
+    follow_request = FollowRequest.find(params[:id])
+    if params[:status] == "accepted"
+      follow_request.update(status: "accepted")
+      redirect_to user_profile_path(current_user.username), notice: "Follow request accepted"
+    elsif params[:status] == "rejected"
+      follow_request.update(status: "rejected")
+      redirect_to user_profile_path(current_user.username), notice: "Follow request rejected."
     else
-      redirect_to("/follow_requests/#{ the_follow_request.id}", { :alert =>  the_follow_request.errors.full_messages.to_sentence })
+      redirect_to user_profile_path(current_user.username), alert: "Invalid"
     end
   end
-
   def destroy
-    the_id = params.fetch("path_id")
-    the_follow_request = FollowRequest.where({ :id => the_id }).at(0)
+    follow_request = FollowRequest.find(params[:id])
+    follow_request.destroy
 
-    the_follow_request.destroy
+    redirect_to users_path, notice: "Unfollowed successfully."
+  end
 
-    redirect_to("/follow_requests", { :notice => "Follow Request deleted successfully."} )
+  def accept
+    follow_request = FollowRequest.find(params[:id])
+    if follow_request.update(status: "accepted")
+      redirect_to user_profile_path(current_user.username), notice: "Follow request accepted"
+    else
+      redirect_to user_profile_path(current_user.username), alert: "Unable to accept follow request."
+    end
+  end
+  def reject
+    follow_request = FollowRequest.find(params[:id])
+    if follow_request.update(status: "rejected")
+      redirect_to user_profile_path(current_user.username), notice: "Follow request rejected"
+    else
+      redirect_to user_profile_path(current_user.username), alert: "Unable to reject follow request"
+    end
   end
 end
